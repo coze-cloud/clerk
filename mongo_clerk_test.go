@@ -6,62 +6,7 @@ import (
 	"testing"
 )
 
-type Message struct {
-	Id string `bson:"_id"`
-	Title string
-	Body string
-}
-
 func TestMain(m *testing.M) {
-
-	//ctx, cancel := context.WithTimeout(context.Background(), 10 * time.Second)
-	//defer cancel()
-	//
-	//clientOptions := options.Client().ApplyURI("mongodb://root:changeme@localhost:27017")
-	//
-	//client, err := mongo.Connect(ctx, clientOptions)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//defer func() {
-	//	err := client.Disconnect(ctx)
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//}()
-	//
-	//ctx, cancel = context.WithTimeout(context.Background(), 2 * time.Second)
-	//defer cancel()
-	//err = client.Ping(ctx, nil)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//
-	//collection := client.Database("clerk").Collection("testing")
-	//
-	//messageId := uuid.NewV4().String()
-	//message := Message{Id: messageId, Title: "Subject", Body: "Hello World"}
-	//
-	//ctx, cancel = context.WithTimeout(context.Background(), 5 * time.Second)
-	//defer cancel()
-	//_, err = collection.InsertOne(ctx, message)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//
-	//filter := bson.D{{"_id", messageId}}
-	//ctx, cancel = context.WithTimeout(context.Background(), 5 * time.Second)
-	//defer cancel()
-	//
-	//retrievedMessage := new(Message)
-	//
-	//err = collection.FindOne(ctx, filter).Decode(retrievedMessage)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//
-	//log.Println(retrievedMessage)
-
 	type Message struct {
 		Id string `bson:"_id"`
 		Subject string
@@ -82,7 +27,7 @@ func TestMain(m *testing.M) {
 
 	createCommand := NewMongoCreateCommand(collection, &Message{
 		Id: messageId,
-		Subject: "Hello",
+		Subject: "Hello!",
 		Body: "Hello World",
 	})
 	err = connection.SendCommand(createCommand)
@@ -90,13 +35,51 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
+	singleQuery := NewMongoSingleQuery(collection).Where("_id", messageId)
+	iterator, err := connection.SendQuery(singleQuery)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	retrievedMessage := Message{}
+	err = iterator.Single(&retrievedMessage)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println(retrievedMessage)
+
 	updateCommand := NewMongoUpdateCommand(collection, &Message{
 		Id: messageId,
-		Subject: "Hello",
+		Subject: "Hello!",
 		Body: "Hello Updated",
 	}).Where("_id", messageId)
 	err = connection.SendCommand(updateCommand)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	listQuery := NewMongoListQuery(collection)
+	iterator, err = connection.SendQuery(listQuery)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	retrievedMessages := []Message{}
+	for iterator.Next() {
+		retrievedMessage := Message{}
+		err := iterator.Decode(&retrievedMessage)
+		if err != nil {
+			log.Fatal(err)
+		}
+		retrievedMessages = append(retrievedMessages, retrievedMessage)
+
+		deleteCommand := NewMongoDeleteCommand(collection).Where("_id", retrievedMessage.Id)
+		err = connection.SendCommand(deleteCommand)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	log.Println(retrievedMessages)
 }

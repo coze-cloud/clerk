@@ -39,6 +39,16 @@ func NewMongoConnection(connectionString string) (Connection, error) {
 	return connection, nil
 }
 
+func (connection mongoConnection) SendQuery(query Query) (Iterator, error) {
+	databaseName := query.GetCollection().Database.Name
+	collectionName := query.GetCollection().Name
+
+	collection := connection.client.Database(databaseName).Collection(collectionName)
+	queryHandler := newMongoQueryHandler(collection)
+
+	return query.Handle(queryHandler)
+}
+
 func (connection mongoConnection) SendCommand(command Command) error {
 	databaseName := command.GetCollection().Database.Name
 	collectionName := command.GetCollection().Name
