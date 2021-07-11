@@ -36,4 +36,11 @@ func (handler mongoCommandHandler) Update(filter interface{}, entity interface{}
 	return err
 }
 
+func (handler mongoCommandHandler) Delete(filter interface{}) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
+	defer cancel()
+
+	_, err := handler.collection.DeleteOne(ctx, filter)
+	return err
+}
 
