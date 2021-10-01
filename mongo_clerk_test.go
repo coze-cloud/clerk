@@ -59,6 +59,17 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
+	upsertedMessageId := uuid.NewV4().String()
+	upsertCommand := NewMongoUpdateCommand(collection, &Message{
+		Id: upsertedMessageId,
+		Subject: "Hello! (again)",
+		Body: "Hello World, (again)",
+	}).Where("_id", upsertedMessageId)
+	err = connection.SendCommand(upsertCommand)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	listQuery := NewMongoListQuery(collection)
 	iterator, err = connection.SendQuery(listQuery)
 	if err != nil {
