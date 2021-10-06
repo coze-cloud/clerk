@@ -92,7 +92,7 @@ for iterator.Next() {
 
 ## Future plans
 
-* [ ] Unit tests for the existing components
+* [x] Unit tests for the existing components
 * [ ] Support for more database implementations
 
 ---
