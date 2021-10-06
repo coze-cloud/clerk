@@ -8,17 +8,11 @@ import (
 )
 
 type mongoQueryHandler struct {
-	QueryHandler // Interface
-
 	collection *mongo.Collection
 }
 
 func newMongoQueryHandler(collection *mongo.Collection) QueryHandler {
-	handler := new(mongoQueryHandler)
-
-	handler.collection = collection
-
-	return handler
+	return &mongoQueryHandler{collection: collection}
 }
 
 func (handler mongoQueryHandler) RetrieveAll() (Iterator, error) {

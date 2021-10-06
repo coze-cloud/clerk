@@ -1,7 +1,7 @@
 package clerk
 
 type Query interface {
-	GetCollection() Collection
+	handle(handler QueryHandler) (Iterator, error)
 
-	Handle(handler QueryHandler) (Iterator, error)
+	getCollection() Collection
 }

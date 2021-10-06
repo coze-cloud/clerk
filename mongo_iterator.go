@@ -6,19 +6,12 @@ import (
 )
 
 type mongoIterator struct {
-	Iterator // Interface
-
 	ctx context.Context
 	cursor *mongo.Cursor
 }
 
 func newMongoIterator(ctx context.Context, cursor *mongo.Cursor) Iterator {
-	iterator := new(mongoIterator)
-
-	iterator.ctx = ctx
-	iterator.cursor = cursor
-
-	return iterator
+	return &mongoIterator{ctx: ctx, cursor: cursor}
 }
 
 func (iterator mongoIterator) Next() bool {

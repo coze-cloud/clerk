@@ -1,15 +1,10 @@
 package clerk
 
 type Collection struct {
-	Database Database
-	Name string
+	database Database
+	name     string
 }
 
 func NewCollection(database Database, name string) Collection {
-	collection := new(Collection)
-
-	collection.Database = database
-	collection.Name = name
-
-	return *collection
+	return Collection{database: database, name: name}
 }

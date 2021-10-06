@@ -1,7 +1,7 @@
 package clerk
 
 type Command interface {
-	GetCollection() Collection
+	handle(handler CommandHandler) error
 
-	Handle(handler CommandHandler) error
+	getCollection() Collection
 }

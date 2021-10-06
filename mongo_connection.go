@@ -8,60 +8,58 @@ import (
 )
 
 type mongoConnection struct {
-	Connection // Interface
-
 	ctx context.Context
 	client *mongo.Client
 }
 
 func NewMongoConnection(connectionString string) (Connection, error) {
-	connection := new(mongoConnection)
-
 	var err error
 
 	var cancel context.CancelFunc
-	connection.ctx, cancel = context.WithTimeout(context.Background(), 10 * time.Second)
+	connectionCtx, cancel := context.WithTimeout(context.Background(), 10 * time.Second)
 	defer cancel()
 
 	clientOptions := options.Client().ApplyURI(connectionString)
-	connection.client, err = mongo.Connect(connection.ctx, clientOptions)
+	client, err := mongo.Connect(connectionCtx, clientOptions)
 	if err != nil {
 		return nil, err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	pingCtx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	err = connection.client.Ping(ctx, nil)
+	err = client.Ping(pingCtx, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	return connection, nil
+	return &mongoConnection{
+		ctx: connectionCtx,
+		client: client,
+	}, nil
 }
 
-func (connection mongoConnection) SendQuery(query Query) (Iterator, error) {
-	databaseName := query.GetCollection().Database.Name
-	collectionName := query.GetCollection().Name
+func (c mongoConnection) SendQuery(query Query) (Iterator, error) {
+	databaseName := query.getCollection().database.name
+	collectionName := query.getCollection().name
 
-	collection := connection.client.Database(databaseName).Collection(collectionName)
+	collection := c.client.Database(databaseName).Collection(collectionName)
 	queryHandler := newMongoQueryHandler(collection)
 
-	return query.Handle(queryHandler)
+	return query.handle(queryHandler)
 }
 
-func (connection mongoConnection) SendCommand(command Command) error {
-	databaseName := command.GetCollection().Database.Name
-	collectionName := command.GetCollection().Name
+func (c mongoConnection) SendCommand(command Command) error {
+	databaseName := command.getCollection().database.name
+	collectionName := command.getCollection().name
 
-	collection := connection.client.Database(databaseName).Collection(collectionName)
+	collection := c.client.Database(databaseName).Collection(collectionName)
 	commandHandler := newMongoCommandHandler(collection)
 
-	return command.Handle(commandHandler)
+	return command.handle(commandHandler)
 }
 
-func (connection mongoConnection) Close(errorHandler func(err error)) {
-	err := connection.client.Disconnect(connection.ctx)
-	if err != nil && errorHandler != nil {
-		errorHandler(err)
+func (c mongoConnection) Close(handler func(err error)) {
+	if err := c.client.Disconnect(c.ctx); handler != nil && err != nil {
+		handler(err)
 	}
 }

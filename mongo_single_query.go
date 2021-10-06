@@ -2,30 +2,24 @@ package clerk
 
 import "go.mongodb.org/mongo-driver/bson"
 
-type mongoSingleQuery struct {
-	Query // Interface
-
+type MongoSingleQuery struct {
 	collection Collection
 	filter bson.D
 }
 
-func NewMongoSingleQuery(collection Collection) *mongoSingleQuery {
-	query := new(mongoSingleQuery)
-
-	query.collection = collection
-
-	return query
+func NewMongoSingleQuery(collection Collection) MongoSingleQuery {
+	return MongoSingleQuery{collection: collection}
 }
 
-func (query mongoSingleQuery) Where(key string, value interface{}) mongoSingleQuery {
+func (query MongoSingleQuery) Where(key string, value interface{}) MongoSingleQuery {
 	query.filter = append(query.filter, bson.E{Key: key, Value: value})
 	return query
 }
 
-func (query mongoSingleQuery) GetCollection() Collection {
-	return query.collection
+func (query MongoSingleQuery) handle(handler QueryHandler) (Iterator, error) {
+	return handler.Retrieve(query.filter)
 }
 
-func (query mongoSingleQuery) Handle(handler QueryHandler) (Iterator, error) {
-	return handler.Retrieve(query.filter)
+func (query MongoSingleQuery) getCollection() Collection {
+	return query.collection
 }
