@@ -1,27 +1,21 @@
 package clerk
 
-type mongoCreateCommand struct {
-	Command // Interface
-
+type MongoCreateCommand struct {
 	collection Collection
 	entity interface{}
 }
 
-func NewMongoCreateCommand(collection Collection, entity interface{}) *mongoCreateCommand {
-	command := new(mongoCreateCommand)
-
-	command.collection = collection
-	command.entity = entity
-
-	return command
+func NewMongoCreateCommand(collection Collection, entity interface{}) MongoCreateCommand {
+	return MongoCreateCommand{collection: collection, entity: entity}
 }
 
-func (command mongoCreateCommand) GetCollection() Collection {
+func (command MongoCreateCommand) handle(handler CommandHandler) error {
+	return handler.Create(command.entity)
+}
+
+func (command MongoCreateCommand) getCollection() Collection {
 	return command.collection
 }
 
-func (command mongoCreateCommand) Handle(handler CommandHandler) error {
-	return handler.Create(command.entity)
-}
 
 

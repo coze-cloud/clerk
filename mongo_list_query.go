@@ -1,23 +1,17 @@
 package clerk
 
-type mongoListQuery struct {
-	Query // Interface
-
+type MongoListQuery struct {
 	collection Collection
 }
 
-func NewMongoListQuery(collection Collection) *mongoListQuery {
-	query := new(mongoListQuery)
-
-	query.collection = collection
-
-	return query
+func NewMongoListQuery(collection Collection) MongoListQuery {
+	return MongoListQuery{collection: collection}
 }
 
-func (query mongoListQuery) GetCollection() Collection {
-	return query.collection
-}
-
-func (query mongoListQuery) Handle(handler QueryHandler) (Iterator, error) {
+func (query MongoListQuery) handle(handler QueryHandler) (Iterator, error) {
 	return handler.RetrieveAll()
+}
+
+func (query MongoListQuery) getCollection() Collection {
+	return query.collection
 }

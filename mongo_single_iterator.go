@@ -2,23 +2,15 @@ package clerk
 
 import (
 	"go.mongodb.org/mongo-driver/mongo"
-	"gopkg.in/mcuadros/go-defaults.v1"
 )
 
 type mongoSingleIterator struct {
-	Iterator // Interface
-
-	hasNext bool `default:"true"`
+	hasNext bool
 	result  *mongo.SingleResult
 }
 
 func newMongoSingleIterator(result *mongo.SingleResult) Iterator {
-	iterator := new(mongoSingleIterator)
-	defaults.SetDefaults(iterator)
-
-	iterator.result = result
-
-	return iterator
+	return &mongoSingleIterator{hasNext: true, result: result}
 }
 
 func (iterator mongoSingleIterator) Next() bool {

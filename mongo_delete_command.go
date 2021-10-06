@@ -2,30 +2,24 @@ package clerk
 
 import "go.mongodb.org/mongo-driver/bson"
 
-type mongoDeleteCommand struct {
-	Command // Interface
-
+type MongoDeleteCommand struct {
 	collection Collection
 	filter bson.D
 }
 
-func NewMongoDeleteCommand(collection Collection) *mongoDeleteCommand {
-	command := new(mongoDeleteCommand)
-
-	command.collection = collection
-
-	return command
+func NewMongoDeleteCommand(collection Collection) MongoDeleteCommand {
+	return MongoDeleteCommand{collection: collection}
 }
 
-func (command mongoDeleteCommand) Where(key string, value interface{}) mongoDeleteCommand {
+func (command MongoDeleteCommand) Where(key string, value interface{}) MongoDeleteCommand {
 	command.filter = append(command.filter, bson.E{Key: key, Value: value})
 	return command
 }
 
-func (command mongoDeleteCommand) GetCollection() Collection {
-	return command.collection
+func (command MongoDeleteCommand) handle(handler CommandHandler) error {
+	return handler.Delete(command.filter)
 }
 
-func (command mongoDeleteCommand) Handle(handler CommandHandler) error {
-	return handler.Delete(command.filter)
+func (command MongoDeleteCommand) getCollection() Collection {
+	return command.collection
 }
