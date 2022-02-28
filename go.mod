@@ -1,4 +1,4 @@
-module github.com/cozy-hosting/clerk
+module github.com/coze-cloud/clerk
 
 go 1.16
 

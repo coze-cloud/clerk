@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	clerk "github.com/cozy-hosting/clerk/src"
+	clerk "github.com/coze-hosting/clerk/src"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
