@@ -9,17 +9,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type monogdbContext struct {
+type MonogdbContext struct {
 	client *mongo.Client
 }
 
-func newMongoContext(client *mongo.Client) *monogdbContext {
-	return &monogdbContext{
+func newMongoContext(client *mongo.Client) *MonogdbContext {
+	return &MonogdbContext{
 		client: client,
 	}
 }
 
-func (c *monogdbContext) Create(collection *clerk.Collection, data interface{}) error {
+func (c *MonogdbContext) Create(collection *clerk.Collection, data interface{}) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -28,7 +28,7 @@ func (c *monogdbContext) Create(collection *clerk.Collection, data interface{}) 
 	return err
 }
 
-func (c *monogdbContext) Update(collection *clerk.Collection, filter map[string]interface{}, entity interface{}, upsert bool) error {
+func (c *MonogdbContext) Update(collection *clerk.Collection, filter map[string]interface{}, entity interface{}, upsert bool) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -38,7 +38,7 @@ func (c *monogdbContext) Update(collection *clerk.Collection, filter map[string]
 	return err
 }
 
-func (c *monogdbContext) Query(collection *clerk.Collection, filter map[string]interface{}) ([]interface{}, error) {
+func (c *MonogdbContext) Query(collection *clerk.Collection, filter map[string]interface{}) ([]interface{}, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
