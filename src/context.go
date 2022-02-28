@@ -8,6 +8,6 @@ type Updater interface {
 	Update(collection *Collection, filter map[string]interface{}, data interface{}, upsert bool) error
 }
 
-type Queryer interface {
+type Querier interface {
 	Query(collection *Collection, filter map[string]interface{}) ([]interface{}, error)
 }

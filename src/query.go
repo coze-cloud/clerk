@@ -17,6 +17,6 @@ func (q *query) Where(key string, value interface{}) *query {
 	return q
 }
 
-func (q *query) Execute(queryer Queryer) ([]interface{}, error) {
-	return queryer.Query(q.collection, q.filter)
+func (q *query) Execute(querier Querier) ([]interface{}, error) {
+	return querier.Query(q.collection, q.filter)
 }
