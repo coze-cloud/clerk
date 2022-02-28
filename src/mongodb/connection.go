@@ -8,12 +8,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type mongodbConnection struct {
+type MongodbConnection struct {
 	ctx    context.Context
 	client *mongo.Client
 }
 
-func NewMongoConnection(url string) (*mongodbConnection, error) {
+func NewMongoConnection(url string) (*MongodbConnection, error) {
 	var err error
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -24,17 +24,17 @@ func NewMongoConnection(url string) (*mongodbConnection, error) {
 		return nil, err
 	}
 
-	return &mongodbConnection{
+	return &MongodbConnection{
 		ctx:    ctx,
 		client: client,
 	}, nil
 }
 
-func (c *mongodbConnection) Context() *monogdbContext {
+func (c *MongodbConnection) Context() *MonogdbContext {
 	return newMongoContext(c.client)
 }
 
-func (c *mongodbConnection) Close(handler func(err error)) {
+func (c *MongodbConnection) Close(handler func(err error)) {
 	err := c.client.Disconnect(c.ctx)
 	if handler != nil {
 		handler(err)
