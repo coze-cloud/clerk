@@ -65,4 +65,4 @@ fmt.Println(results...)
 
 ---
 
-Copyright © 2021 - The cozy team **& contributors**
+Copyright © 2022 - The cozy team **& contributors**
