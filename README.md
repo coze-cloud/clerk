@@ -16,84 +16,52 @@ Being a minimalistic library, *clerk* only provides the basics. The rest is up t
 ### Creating a connection
 
 ```go
-connection, err := NewMongoConnection("mongodb://root:root@localhost:27017")
+connection, err := mongodb.NewMongoConnection("mongodb://root:change-me@host.docker.internal:27017")
 if err != nil {
-    log.Fatal(err)
+	panic(err)
 }
 
 defer connection.Close(func(err error) {
-    log.Fatal(err)
+	if err != nil {
+		panic(err)
+	}
 })
 ```
 
 ### Defining a database & collection
 
 ```go
-collection := NewDatabase("clerk").GetCollection("messages")
+collection := clerk.NewDatabase("foo").Collection("bar")
 ```
 
-### Persisting a data structure in a collection
+### Persisting a data in a collection
 
 ```go
 type Message struct {
-    Id string `bson:"_id"`
+    Id   string `bson:"_id"`
     Body string
 }
 
-createCommand := NewMongoCreateCommand(collection, &Message{
-    Id: uuid.NewV4().String(),
+create := clerk.NewCreate(collection, Message{
+    Id:   "0",
     Body: "Hello World",
 })
-
-if err = connection.SendCommand(createCommand); err != nil {
-    log.Fatal(err)
+if err := create.Execute(connection.Context()); err != nil {
+    panic(err)
 }
 ```
 
-### Querying the collection for a data structure
+### Querying the collection
 
 ```go
-type Message struct {
-    Id string `bson:"_id"`
-    Body string
-}
-
-singleQuery := NewMongoSingleQuery(collection).Where("_id", uuid.NewV4().String())
-
-iterator, err := connection.SendQuery(singleQuery)
+query := clerk.NewQuery(collection).Where("_id", "0")
+results, err := query.Execute(connection.Context())
 if err != nil {
-    log.Fatal(err)
+    panic(err)
 }
 
-message := Message{}
-if err = iterator.Single(&message); err != nil {
-    log.Fatal(err)
-}
+fmt.Println(results...)
 ```
-
-
-```go
-listQuery := NewMongoListQuery(collection)
-
-iterator, err = connection.SendQuery(listQuery)
-if err != nil {
-    log.Fatal(err)
-}
-
-messages := []Message{}
-for iterator.Next() {
-    message := Message{}
-    if err := iterator.Decode(&message); err != nil {
-        log.Fatal(err)
-    }
-    messages = append(messages, message)
-}
-```
-
-## Future plans
-
-* [x] Unit tests for the existing components
-* [ ] Support for more database implementations
 
 ---
 
