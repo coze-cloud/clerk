@@ -16,7 +16,7 @@ Being a minimalistic library, *clerk* only provides the basics. The rest is up t
 ### Creating a connection
 
 ```go
-connection, err := mongodb.NewMongoConnection("mongodb://root:change-me@host.docker.internal:27017")
+connection, err := mongodb.NewMongoConnection("mongodb://root:root@localhost:27017")
 if err != nil {
 	panic(err)
 }
