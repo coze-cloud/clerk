@@ -28,33 +28,28 @@ func (c *MonogdbContext) Create(collection *clerk.Collection, data interface{}) 
 	return err
 }
 
-func (c *MonogdbContext) Update(collection *clerk.Collection, filter map[string]interface{}, entity interface{}, upsert bool) error {
+func (c *MonogdbContext) Update(collection *clerk.Collection, filter map[string]interface{}, data interface{}, upsert bool) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	opts := options.Replace().SetUpsert(upsert)
 	_, err := c.client.Database(collection.Database).Collection(collection.Name).
-		ReplaceOne(ctx, filter, entity, opts)
+		ReplaceOne(ctx, filter, data, opts)
 	return err
 }
 
-func (c *MonogdbContext) Query(collection *clerk.Collection, filter map[string]interface{}) ([]interface{}, error) {
+func (c *MonogdbContext) Query(collection *clerk.Collection, filter map[string]interface{}, results interface{}) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	cursor, err := c.client.Database(collection.Database).Collection(collection.Name).
 		Find(ctx, filter)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	results := []interface{}{}
-	for cursor.Next(ctx) {
-		var result interface{}
-		if err := cursor.Decode(&result); err != nil {
-			return nil, err
-		}
-		results = append(results, result)
+	if err := cursor.All(ctx, results); err != nil {
+		return err
 	}
-	return results, nil
+	return nil
 }

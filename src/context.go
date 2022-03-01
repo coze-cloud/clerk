@@ -9,5 +9,5 @@ type Updater interface {
 }
 
 type Querier interface {
-	Query(collection *Collection, filter map[string]interface{}) ([]interface{}, error)
+	Query(collection *Collection, filter map[string]interface{}, results interface{}) error
 }

@@ -54,9 +54,15 @@ if err := create.Execute(connection.Context()); err != nil {
 ### Querying the collection
 
 ```go
+type Message struct {
+    Id   string `bson:"_id"`
+    Body string
+}
+
+results := []Message{}
+
 query := clerk.NewQuery(collection).Where("_id", "0")
-results, err := query.Execute(connection.Context())
-if err != nil {
+if err := query.Execute(connection.Context(), results); err != nil {
     panic(err)
 }
 
