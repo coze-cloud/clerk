@@ -38,6 +38,15 @@ func (c *MonogdbContext) Update(collection *clerk.Collection, filter map[string]
 	return err
 }
 
+func (c *MonogdbContext) Delete(collection *clerk.Collection, filter map[string]interface{}) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err := c.client.Database(collection.Database).Collection(collection.Name).
+		DeleteOne(ctx, filter)
+	return err
+}
+
 func (c *MonogdbContext) Query(collection *clerk.Collection, filter map[string]interface{}, results interface{}) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
