@@ -6,6 +6,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 type MongodbConnection struct {
@@ -13,14 +14,17 @@ type MongodbConnection struct {
 	client *mongo.Client
 }
 
-func NewMongoConnection(url string) (*MongodbConnection, error) {
+func NewMongoConnection(ctx context.Context, url string) (*MongodbConnection, error) {
 	var err error
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(url))
 	if err != nil {
+		return nil, err
+	}
+
+	timeoutCtx, timeoutCancel := context.WithTimeout(ctx, 5*time.Second)
+	defer timeoutCancel()
+	if err = client.Ping(timeoutCtx, readpref.Primary()); err != nil {
 		return nil, err
 	}
 
@@ -28,10 +32,6 @@ func NewMongoConnection(url string) (*MongodbConnection, error) {
 		ctx:    ctx,
 		client: client,
 	}, nil
-}
-
-func (c *MongodbConnection) Context() *MonogdbContext {
-	return newMongoContext(c.client)
 }
 
 func (c *MongodbConnection) Close(handler func(err error)) {

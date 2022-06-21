@@ -1,17 +1,19 @@
 package clerk
 
-type create struct {
+import "context"
+
+type create[T any] struct {
 	collection *Collection
-	data       interface{}
+	data       T
 }
 
-func NewCreate(collection *Collection, data interface{}) *create {
-	return &create{
+func NewCreate[T any](collection *Collection, data T) *create[T] {
+	return &create[T]{
 		collection: collection,
 		data:       data,
 	}
 }
 
-func (c *create) Execute(creator Creator) error {
-	return creator.Create(c.collection, c.data)
+func (c *create[T]) Execute(ctx context.Context, creator Creator[T]) error {
+	return creator.Create(ctx, c.collection, c.data)
 }
