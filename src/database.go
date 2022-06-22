@@ -1,15 +1,15 @@
 package clerk
 
-type database struct {
+type Database struct {
 	name string
 }
 
-func NewDatabase(name string) *database {
-	return &database{
+func NewDatabase(name string) *Database {
+	return &Database{
 		name: name,
 	}
 }
 
-func (d *database) Collection(name string) *Collection {
+func (d *Database) Collection(name string) *Collection {
 	return NewCollectionWithDatabase(d.name, name)
 }
