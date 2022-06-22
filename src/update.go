@@ -1,31 +1,33 @@
 package clerk
 
-type update struct {
+import "context"
+
+type update[T any] struct {
 	collection *Collection
-	filter     map[string]interface{}
-	data       interface{}
+	filter     map[string]any
+	data       T
 	upsert     bool
 }
 
-func NewUpdate(collection *Collection, data interface{}) *update {
-	return &update{
+func NewUpdate[T any](collection *Collection, data T) *update[T] {
+	return &update[T]{
 		collection: collection,
-		filter:     map[string]interface{}{},
+		filter:     map[string]any{},
 		data:       data,
 		upsert:     false,
 	}
 }
 
-func (c *update) Where(key string, value interface{}) *update {
+func (c *update[T]) Where(key string, value any) *update[T] {
 	c.filter[key] = value
 	return c
 }
 
-func (c *update) WithUpsert() *update {
+func (c *update[T]) WithUpsert() *update[T] {
 	c.upsert = true
 	return c
 }
 
-func (c *update) Execute(updater Updater) error {
-	return updater.Update(c.collection, c.filter, c.data, c.upsert)
+func (c *update[T]) Execute(ctx context.Context, updater Updater[T]) error {
+	return updater.Update(ctx, c.collection, c.filter, c.data, c.upsert)
 }

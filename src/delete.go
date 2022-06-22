@@ -1,22 +1,24 @@
 package clerk
 
-type delete struct {
+import "context"
+
+type delete[T any] struct {
 	collection *Collection
-	filter     map[string]interface{}
+	filter     map[string]any
 }
 
-func NewDelete(collection *Collection) *delete {
-	return &delete{
+func NewDelete[T any](collection *Collection) *delete[T] {
+	return &delete[T]{
 		collection: collection,
-		filter:     map[string]interface{}{},
+		filter:     map[string]any{},
 	}
 }
 
-func (d *delete) Where(key string, value interface{}) *delete {
+func (d *delete[T]) Where(key string, value any) *delete[T] {
 	d.filter[key] = value
 	return d
 }
 
-func (d *delete) Execute(deleter Deleter) error {
-	return deleter.Delete(d.collection, d.filter)
+func (d *delete[T]) Execute(ctx context.Context, deleter Deleter[T]) error {
+	return deleter.Delete(ctx, d.collection, d.filter)
 }
