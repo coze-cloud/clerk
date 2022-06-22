@@ -5,7 +5,16 @@ type Collection struct {
 	Name     string
 }
 
-func NewCollection(database string, name string) *Collection {
+func NewCollection(name string) *Collection {
+	return &Collection{
+		Name: name,
+	}
+}
+
+func NewCollectionWithDatabase(
+	database string,
+	name string,
+) *Collection {
 	return &Collection{
 		Database: database,
 		Name:     name,

@@ -11,8 +11,5 @@ func NewDatabase(name string) *database {
 }
 
 func (d *database) Collection(name string) *Collection {
-	return &Collection{
-		Database: d.name,
-		Name:     name,
-	}
+	return NewCollectionWithDatabase(d.name, name)
 }

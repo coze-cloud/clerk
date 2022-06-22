@@ -33,6 +33,21 @@ type Querier[T any] interface {
 		ctx context.Context,
 		collection *Collection,
 		filter map[string]any,
+		skip int,
+		take int,
+	) (<-chan T, error)
+}
+
+type Searcher[T any] interface {
+	Search(
+		ctx context.Context,
+		collection *Collection,
+		query string,
+		highlight []string,
+		filterable []string,
+		filterQuery string,
+		skip int,
+		take int,
 	) (<-chan T, error)
 }
 

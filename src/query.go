@@ -5,12 +5,16 @@ import "context"
 type query[T any] struct {
 	collection *Collection
 	filter     map[string]any
+	skip       int
+	take       int
 }
 
 func NewQuery[T any](collection *Collection) *query[T] {
 	return &query[T]{
 		collection: collection,
 		filter:     map[string]any{},
+		skip:       -1,
+		take:       -1,
 	}
 }
 
@@ -19,10 +23,22 @@ func (q *query[T]) Where(key string, value any) *query[T] {
 	return q
 }
 
+func (q *query[T]) Skip(skip int) *query[T] {
+	q.skip = skip
+	return q
+}
+
+func (q *query[T]) Take(take int) *query[T] {
+	q.take = take
+	return q
+}
+
 func (q *query[T]) Execute(ctx context.Context, querier Querier[T]) (<-chan T, error) {
 	return querier.Query(
 		ctx,
 		q.collection,
 		q.filter,
+		q.skip,
+		q.take,
 	)
 }
