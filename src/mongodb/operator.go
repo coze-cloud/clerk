@@ -75,9 +75,18 @@ func (c *MongodbOperator[T]) Query(
 	ctx context.Context,
 	collection *clerk.Collection,
 	filter map[string]any,
+	skip int,
+	take int,
 ) (<-chan T, error) {
 	opts := options.
 		Find()
+
+	if skip >= 0 {
+		opts.SetSkip(int64(skip))
+	}
+	if take > 0 {
+		opts.SetLimit(int64(take))
+	}
 
 	cursor, err := c.client.
 		Database(collection.Database).
