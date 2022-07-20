@@ -1,6 +1,10 @@
 package clerk
 
-import "context"
+import (
+	"context"
+
+	"go.mongodb.org/mongo-driver/bson"
+)
 
 type Creator[T any] interface {
 	Create(
@@ -33,6 +37,7 @@ type Querier[T any] interface {
 		ctx context.Context,
 		collection *Collection,
 		filter map[string]any,
+		sorting bson.D,
 		skip int,
 		take int,
 	) (<-chan T, error)

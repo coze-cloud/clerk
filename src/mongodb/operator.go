@@ -75,6 +75,7 @@ func (c *MongodbOperator[T]) Query(
 	ctx context.Context,
 	collection *clerk.Collection,
 	filter map[string]any,
+	sorting bson.D,
 	skip int,
 	take int,
 ) (<-chan T, error) {
@@ -86,6 +87,9 @@ func (c *MongodbOperator[T]) Query(
 	}
 	if take > 0 {
 		opts.SetLimit(int64(take))
+	}
+	if len(sorting) > 0 {
+		opts.SetSort(sorting)
 	}
 
 	cursor, err := c.client.
@@ -101,7 +105,9 @@ func (c *MongodbOperator[T]) Query(
 	go func() {
 		for cursor.Next(ctx) {
 			var data T
-			cursor.Decode(&data)
+			if err := cursor.Decode(&data); err != nil {
+				continue
+			}
 			out <- data
 		}
 		close(out)
