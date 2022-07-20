@@ -37,11 +37,11 @@ func (c *MeilisearchOperator[T]) Create(
 		return err
 	}
 
-	task, err = c.client.WaitForTask(task, meilisearch.WaitParams{
+	waitTask, err := c.client.WaitForTask(task.TaskUID, meilisearch.WaitParams{
 		Context: ctx,
 	})
-	if task.Status == "failed" {
-		return errors.New(task.Error.Message)
+	if waitTask.Status == "failed" {
+		return errors.New(waitTask.Error.Message)
 	}
 	return err
 }
@@ -60,7 +60,9 @@ func (c *MeilisearchOperator[T]) Update(
 		filterable = append(filterable, key)
 	}
 	if len(filterable) > 0 {
-		index.UpdateFilterableAttributes(&filterable)
+		if _, err := index.UpdateFilterableAttributes(&filterable); err != nil {
+			return err
+		}
 	}
 
 	if err := c.Create(ctx, collection, data); err != nil {
@@ -92,11 +94,11 @@ func (c *MeilisearchOperator[T]) Delete(
 		return err
 	}
 
-	task, err = c.client.WaitForTask(task, meilisearch.WaitParams{
+	waitTask, err := c.client.WaitForTask(task.TaskUID, meilisearch.WaitParams{
 		Context: ctx,
 	})
-	if task.Status == "failed" {
-		return errors.New(task.Error.Message)
+	if waitTask.Status == "failed" {
+		return errors.New(waitTask.Error.Message)
 	}
 	return err
 }
@@ -105,12 +107,14 @@ func (c *MeilisearchOperator[T]) Query(
 	ctx context.Context,
 	collection *clerk.Collection,
 	filter map[string]any,
+	sorting map[string]bool,
 	skip int,
 	take int,
 ) (<-chan T, error) {
+	// @todo: use sorting
 	index := c.client.Index(collection.Name)
 
-	request := &meilisearch.DocumentsRequest{}
+	request := &meilisearch.DocumentsQuery{}
 
 	if skip > 0 {
 		request.Offset = int64(skip)
@@ -126,7 +130,7 @@ func (c *MeilisearchOperator[T]) Query(
 		defer close(responded)
 		defer close(responseChan)
 
-		var documents []map[string]any
+		var documents meilisearch.DocumentsResult
 
 		if err := index.GetDocuments(request, &documents); err != nil {
 			return
@@ -135,7 +139,8 @@ func (c *MeilisearchOperator[T]) Query(
 		filteredDocuments := []map[string]any{}
 		if len(filter) > 0 {
 		loop:
-			for _, document := range documents {
+			// @todo: implement pagination and let the search do the filtering
+			for _, document := range documents.Results {
 				for filterKey, filterValue := range filter {
 					value, ok := document[filterKey]
 					if !ok {
@@ -148,7 +153,7 @@ func (c *MeilisearchOperator[T]) Query(
 				filteredDocuments = append(filteredDocuments, document)
 			}
 		} else {
-			filteredDocuments = documents
+			filteredDocuments = documents.Results
 		}
 
 		documentsAsJson, err := json.Marshal(filteredDocuments)
@@ -216,14 +221,14 @@ func (c *MeilisearchOperator[T]) Search(
 			return nil, err
 		}
 
-		task, err = c.client.WaitForTask(task, meilisearch.WaitParams{
+		waitTask, err := c.client.WaitForTask(task.TaskUID, meilisearch.WaitParams{
 			Context: ctx,
 		})
 		if err != nil {
 			return nil, err
 		}
-		if task.Status == "failed" {
-			return nil, errors.New(task.Error.Message)
+		if waitTask.Status == "failed" {
+			return nil, errors.New(waitTask.Error.Message)
 		}
 	}
 	if len(filterQuery) > 0 {
