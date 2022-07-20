@@ -15,7 +15,6 @@ go get github.com/coze-cloud/clerk
 _clerk_ has builtin support for the following database/search engines:
 
 - [MongoDB](https://www.mongodb.com/) - MongoDB is a document-oriented database
-- [Meilisearch](https://www.meilisearch.com/) - Meilisearch is a powerful and fast search engine
 
 ## Usage
 
