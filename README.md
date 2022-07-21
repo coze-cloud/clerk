@@ -7,7 +7,7 @@
 Adding _clerk_ to your Go module is as easy as calling this command in your project
 
 ```shell
-go get github.com/coze-cloud/clerk
+go get github.com/Becklyn/clerk
 ```
 
 ## Supported databases

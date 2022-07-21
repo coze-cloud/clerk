@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	clerk "github.com/coze-cloud/clerk/src"
+	clerk "github.com/Becklyn/clerk/src"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

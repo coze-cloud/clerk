@@ -1,4 +1,4 @@
-module github.com/coze-cloud/clerk
+module github.com/Becklyn/clerk
 
 go 1.18
 
