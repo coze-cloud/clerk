@@ -1,6 +1,8 @@
 package clerk
 
-import "context"
+import (
+	"context"
+)
 
 type Creator[T any] interface {
 	Create(
@@ -33,6 +35,7 @@ type Querier[T any] interface {
 		ctx context.Context,
 		collection *Collection,
 		filter map[string]any,
+		sorting map[string]bool,
 		skip int,
 		take int,
 	) (<-chan T, error)

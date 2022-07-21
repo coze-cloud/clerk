@@ -109,6 +109,35 @@ for result := range queryChan {
 fmt.Println(results...)
 ```
 
+### Sorting the collection
+
+```go
+type Message struct {
+    Id   string `bson:"_id"`
+    Body string
+}
+
+results := []Message{}
+
+queryCtx, queryCancel := context.WithTimeout(
+    context.Background(),
+    time.Second * 5,
+)
+defer queryCancel()
+
+query := clerk.NewQuery[Message](collection).SortBy("_id", true)
+queryChan, err := query.Execute(queryCtx, operator)
+if err != nil {
+    panic(err)
+}
+
+for result := range queryChan {
+    results := append(results, result)
+}
+
+fmt.Println(results...)
+```
+
 ---
 
 Copyright © 2022 - The cozy team **& contributors**
