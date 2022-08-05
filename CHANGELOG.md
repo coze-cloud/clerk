@@ -1,6 +1,7 @@
-# vNext
+# v1.0.0
 
 - (bc) Move code out of src folder for clean package imports
+- (feature) Transaction support for mongodb
 
 # v0.4.1
 
