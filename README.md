@@ -36,6 +36,30 @@ defer connection.Close(func(err error) {
 })
 ```
 
+### Using a mongodb transaction
+
+```go
+connection, err := mongodb.NewMongoConnection("mongodb://root:root@localhost:27017")
+if err != nil {
+	panic(err)
+}
+
+defer connection.Close(func(err error) {
+	if err != nil {
+		panic(err)
+	}
+})
+
+err = connection.WithTransaction(func (ctx context.Context) error {
+	// use the ctx when doing operations on the database and it will be part of the transaction automatically
+
+	return nil
+})
+if err != nil {
+	panic(err)
+}
+```
+
 ### Defining a database operator instance
 
 ```go
