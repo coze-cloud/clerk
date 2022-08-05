@@ -6,7 +6,7 @@ import (
 	"errors"
 	"strings"
 
-	clerk "github.com/Becklyn/clerk/src"
+	"github.com/Becklyn/clerk"
 	"github.com/meilisearch/meilisearch-go"
 )
 
