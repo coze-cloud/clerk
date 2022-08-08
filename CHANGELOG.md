@@ -1,3 +1,10 @@
+# v1.1.1
+
+
+- (feature) Collection renaming for mongodb
+- (feature) Collection dropping for mongodb
+- (internal) Same as v1.1.0
+
 # v1.1.0
 
 - (feature) Collection renaming for mongodb
