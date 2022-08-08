@@ -1,3 +1,8 @@
+# v1.1.0
+
+- (feature) Collection renaming for mongodb
+- (feature) Collection dropping for mongodb
+
 # v1.0.0
 
 - (bc) Move code out of src folder for clean package imports
