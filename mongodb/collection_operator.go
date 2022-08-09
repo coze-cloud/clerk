@@ -46,15 +46,16 @@ func (o *MongodbCollectionOperator) Rename(
 		if err != nil {
 			return err
 		}
-
-		if drop {
-			return o.Drop(ctx, collection)
-		}
 		return nil
 	}
 
 	if err := o.connection.WithTransaction(ctx, handler); err != nil {
 		return nil, err
+	}
+	if drop {
+		if err := o.Drop(ctx, collection); err != nil {
+			return nil, err
+		}
 	}
 	return clerk.NewCollectionWithDatabase(collection.Database, renameTo), nil
 }
