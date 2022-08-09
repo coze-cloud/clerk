@@ -1,3 +1,7 @@
+# v1.1.2
+
+- (bug) Dropping collection as part of rename now works
+
 # v1.1.1
 
 - (feature) Collection renaming for mongodb
