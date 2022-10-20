@@ -21,6 +21,24 @@ func NewMongoCollectionOperator(connection *MongodbConnection) *MongodbCollectio
 	}
 }
 
+func (o *MongodbCollectionOperator) List(
+	ctx context.Context,
+	database *clerk.Database,
+) ([]*clerk.Collection, error) {
+	cursor, err := o.client.
+		Database(database.Name).
+		ListCollectionNames(ctx, bson.D{}, options.ListCollections())
+	if err != nil {
+		return nil, err
+	}
+
+	var collections []*clerk.Collection
+	for _, name := range cursor {
+		collections = append(collections, clerk.NewCollectionWithDatabase(database.Name, name))
+	}
+	return collections, nil
+}
+
 func (o *MongodbCollectionOperator) Rename(
 	ctx context.Context,
 	collection *clerk.Collection,

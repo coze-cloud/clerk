@@ -1,15 +1,15 @@
 package clerk
 
 type Database struct {
-	name string
+	Name string
 }
 
 func NewDatabase(name string) *Database {
 	return &Database{
-		name: name,
+		Name: name,
 	}
 }
 
 func (d *Database) Collection(name string) *Collection {
-	return NewCollectionWithDatabase(d.name, name)
+	return NewCollectionWithDatabase(d.Name, name)
 }

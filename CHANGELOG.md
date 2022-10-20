@@ -1,3 +1,7 @@
+# v1.2.0
+
+- (feature) Add support for collection listing
+
 # v1.1.2
 
 - (bug) Dropping collection as part of rename now works
