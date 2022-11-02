@@ -61,7 +61,7 @@ collection := clerk.NewCollection(database, "bar")
 ### Defining a database operator
 
 ```go
-tOperator := mongodb.NewMongodbOperator[T](connection, collection)
+tOperator := mongodb.NewOperator[T](connection, collection)
 ```
 
 The generic parameter T defines the data type which the operator can interact with.
